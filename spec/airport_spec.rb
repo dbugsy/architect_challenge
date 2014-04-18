@@ -9,6 +9,7 @@ require 'plane'
 # If the airport is full then no planes can land
 describe Airport do
   let(:airport) { Airport.new }
+
   
   context 'taking off and landing' do
     it 'a plane can land' do
@@ -21,6 +22,19 @@ describe Airport do
   context 'traffic control' do
     it 'should have a default capacity of 10' do
       expect(airport.capacity).to eq 10
+    end
+
+    it 'should be able to receive an initialize argument to make capacity 20' do
+      hackneyinternational = Airport.new(capacity: 20)
+      expect(hackneyinternational.capacity).to eq 20
+    end
+
+    it 'is created with no planes' do
+      expect(airport.planes).to eq []
+    end
+
+    it 'should know when it is full' do
+
     end
 
     it 'a plane cannot land if the airport is full' do
