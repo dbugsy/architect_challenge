@@ -1,4 +1,4 @@
-  require 'airport'
+require 'airport'
 require 'plane'
 
 # A plane currently in the airport can be requested to take off.
@@ -19,6 +19,10 @@ describe Airport do
   end
   
   context 'traffic control' do
+    it 'should have a default capacity of 10' do
+      expect(airport.capacity).to eq 10
+    end
+
     it 'a plane cannot land if the airport is full' do
     end
     
@@ -49,7 +53,7 @@ describe Plane do
   let(:plane) { Plane.new }
   
   it 'has a flying status when created' do
-    expect(plane.flying?).to be_true
+    expect(plane.flying_status).not_to be_nil
   end
   
   it 'has a flying status when in the air' do
