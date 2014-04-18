@@ -6,4 +6,7 @@ class Plane
 
   attr_accessor :flying_status
 
+  def land!
+  end
+
 end

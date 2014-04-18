@@ -26,11 +26,13 @@ describe Airport do
     end
 
     it 'should know when it is full' do
+      expect(plane).to receive(:land!).twice
       2.times {hackney.land(plane)}
       expect(hackney.full?).to be_true
     end
 
     it 'should know when it is not full' do
+      expect(plane).to receive(:land!)
       expect(hackney.full?).to be_false
       hackney.land(plane)
     end
@@ -39,11 +41,17 @@ describe Airport do
   
   context 'taking off and landing' do
     it 'a plane can land' do
+      expect(plane).to receive(:land!)
       airport.land(plane)
       expect(airport.planes.count).to eq 1
     end
     
     it 'a plane can take off' do
+      expect(plane).to receive(:land!)
+      expect(plane).to receive(:takeoff!)
+      hackney.land(plane)
+      hackney.launch!
+      expect(hackney.planes.count).to eq 0  
     end
   end
   

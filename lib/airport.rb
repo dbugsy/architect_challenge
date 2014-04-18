@@ -6,8 +6,6 @@ class Airport
     @capacity = options.fetch(:capacity, capacity)
     planes
   end
-  
-  attr_writer :planes
 
   def capacity
     @capacity ||= DEFAULT_CAPACITY
@@ -22,7 +20,13 @@ class Airport
   end
 
   def land(plane)
+    plane.land!
     planes << plane
+  end
+
+  def launch!
+    plane = planes.pop
+    plane.takeoff!
   end
 
 end
