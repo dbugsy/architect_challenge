@@ -7,6 +7,7 @@ class Plane
   attr_reader :flying_status
 
   def land!
+    @flying_status = :landed
   end
 
 end
