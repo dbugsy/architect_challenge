@@ -9,7 +9,7 @@ require 'plane'
 # If the airport is full then no planes can land
 describe Airport do
   let(:airport) { Airport.new }
-  let(:hackneyinternational) {Airport.new(capacity: 2)}
+  let(:hackney) {Airport.new(capacity: 2)}
   let(:plane) {double :plane}
 
   context 'When a new airport is created, it..' do
@@ -22,24 +22,25 @@ describe Airport do
     end
 
     it 'should be able to receive an initialize argument to make capacity 2' do
-      expect(hackneyinternational.capacity).to eq 2
+      expect(hackney.capacity).to eq 2
     end
 
     it 'should know when it is full' do
-      expect(airport.full?).to be_true
-      hackneyinternational.planes=([:plane,:plane])
+      2.times {hackney.land(plane)}
+      expect(hackney.full?).to be_true
     end
 
     it 'should know when it is not full' do
-      expect(airport.full?).to be_false
-      hackneyinternational.planes=([:plane,:plane])
+      expect(hackney.full?).to be_false
+      hackney.land(plane)
     end
 
   end
   
   context 'taking off and landing' do
     it 'a plane can land' do
-
+      airport.land(plane)
+      expect(airport.planes.count).to eq 1
     end
     
     it 'a plane can take off' do

@@ -18,7 +18,11 @@ class Airport
   end
 
   def full?
-    true
+    planes.count >= capacity
+  end
+
+  def land(plane)
+    planes << plane
   end
 
 end
