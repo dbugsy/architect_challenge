@@ -9,10 +9,37 @@ require 'plane'
 # If the airport is full then no planes can land
 describe Airport do
   let(:airport) { Airport.new }
+  let(:hackneyinternational) {Airport.new(capacity: 2)}
+  let(:plane) {double :plane}
 
+  context 'When a new airport is created, it..' do
+    it 'is created with no planes' do
+        expect(airport.planes).to eq []
+    end
+
+    it 'should have a default capacity of 10' do
+      expect(airport.capacity).to eq 10
+    end
+
+    it 'should be able to receive an initialize argument to make capacity 2' do
+      expect(hackneyinternational.capacity).to eq 2
+    end
+
+    it 'should know when it is full' do
+      expect(airport.full?).to be_true
+      hackneyinternational.planes=([:plane,:plane])
+    end
+
+    it 'should know when it is not full' do
+      expect(airport.full?).to be_false
+      hackneyinternational.planes=([:plane,:plane])
+    end
+
+  end
   
   context 'taking off and landing' do
     it 'a plane can land' do
+
     end
     
     it 'a plane can take off' do
@@ -20,23 +47,7 @@ describe Airport do
   end
   
   context 'traffic control' do
-    it 'should have a default capacity of 10' do
-      expect(airport.capacity).to eq 10
-    end
-
-    it 'should be able to receive an initialize argument to make capacity 20' do
-      hackneyinternational = Airport.new(capacity: 20)
-      expect(hackneyinternational.capacity).to eq 20
-    end
-
-    it 'is created with no planes' do
-      expect(airport.planes).to eq []
-    end
-
-    it 'should know when it is full' do
-
-    end
-
+    
     it 'a plane cannot land if the airport is full' do
     end
     
