@@ -4,7 +4,7 @@ class Plane
     @flying_status = :flying
   end
 
-  attr_accessor :flying_status
+  attr_reader :flying_status
 
   def land!
   end

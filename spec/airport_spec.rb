@@ -58,6 +58,11 @@ describe Airport do
   context 'traffic control' do
     
     it 'a plane cannot land if the airport is full' do
+      expect(plane).to receive(:land!).exactly(10).times
+      
+      11.times {airport.land(plane)}
+      expect(airport.land(plane)).to eq 'Permission Denied: Airport Full!'
+      
     end
     
     # Include a weather condition using a module.
@@ -87,7 +92,7 @@ describe Plane do
   let(:plane) { Plane.new }
   
   it 'has a flying status when created' do
-    expect(plane.flying_status).not_to be_nil
+    expect(plane.flying_status).to eq :flying
   end
   
   it 'has a flying status when in the air' do

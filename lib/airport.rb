@@ -20,6 +20,7 @@ class Airport
   end
 
   def land(plane)
+    return 'Permission Denied: Airport Full!' if full?
     plane.land!
     planes << plane
   end
@@ -28,5 +29,7 @@ class Airport
     plane = planes.pop
     plane.takeoff!
   end
+
+  
 
 end
