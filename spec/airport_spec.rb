@@ -1,4 +1,4 @@
-require 'airport'
+  require 'airport'
 require 'plane'
 
 # A plane currently in the airport can be requested to take off.
@@ -49,6 +49,7 @@ describe Plane do
   let(:plane) { Plane.new }
   
   it 'has a flying status when created' do
+    expect(plane.flying?).to be_true
   end
   
   it 'has a flying status when in the air' do
