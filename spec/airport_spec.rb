@@ -11,12 +11,11 @@ describe Airport do
   let(:airport) { Airport.new }
   let(:small_airport) {Airport.new(capacity: 2)}
   let(:plane) {double :plane, permission_to_land: true}
-  # let(:landedplane) {double :plane, flying_status: :landed} 
 
   # use this method to create testing environment with a full airport
   def fill(airport)
     ten_planes = []
-    10.times {ten_planes << :plane}
+    10.times {ten_planes << plane}
     airport.instance_variable_set(:@planes, ten_planes)
     airport
   end
@@ -46,12 +45,14 @@ describe Airport do
   
   context 'taking off and landing' do
     it 'a landed plane can park' do
+      allow(airport).to receive(:the_whim_of_the_gods) {2}
       expect(plane).to receive(:flying_status)
       airport.park(plane)
       expect(airport.planes.count).to eq 1
     end
     
-    it 'can launch a plane' do
+    it 'can launch a plane (in good weather)' do
+      allow(airport).to receive(:the_whim_of_the_gods) {2}
       expect(plane).to receive(:flying_status)
       airport.park(plane)
       expect(plane).to receive(:takeoff!)
@@ -80,11 +81,30 @@ describe Airport do
     # If the airport has a weather condition of stormy,
     # the plane can not land, and must not be in the airport
     context 'weather conditions' do
-      xit 'a plane cannot take off when there is a storm brewing' do
+
+      it 'weather is stormy if whim of the gods is 1' do
+        allow(airport).to receive(:the_whim_of_the_gods) {1}
+        expect(airport.weather_check).to eq :stormy
+      end
+
+      it 'weather is sunny if whim of the gods is 2' do
+        allow(airport).to receive(:the_whim_of_the_gods) {2}
+        expect(airport.weather_check).to eq :sunny
+      end
+
+      it 'a plane cannot take off when there is a storm brewing' do
+        fill(airport)
+        allow(airport).to receive(:weather_check) { :stormy }
+        expect(plane).not_to receive(:takeoff!)
+        expect { airport.launch! }.to raise_error 'Stormy weather: Runway closed!'
       end
       
-      xit 'a plane cannot land in the middle of a storm' do
+      it 'will deny permission to land in the middle of a storm' do
+        allow(airport).to receive(:weather_check) { :stormy }
+        expect(plane).not_to receive(:permission_to_land=)
+        expect { airport.check_permission_to_land(plane) }.to raise_error 'Stormy weather: Runway closed!'
       end
+
     end
   end
 end
@@ -108,6 +128,11 @@ describe Plane do
   # instead of testing private state of instance (@flying_status), check results of that state
   it 'cannot takeoff when created as already flying' do
     expect(plane.takeoff!).to eq 'You cannot take off when you are already flying.'
+  end
+
+  xit 'can test conditions if it can land' do
+    plane.permission_to_land=(true)
+    expect(plane.can_land?).to be_true
   end
 
   it 'cannot land when already landed' do

@@ -1,4 +1,7 @@
+require_relative './weather'
+
 class Airport
+  include WeatherConditions
   
   DEFAULT_CAPACITY = 10
 
@@ -25,11 +28,13 @@ class Airport
   end
 
   def launch!
-    plane = planes.pop
+    raise 'Stormy weather: Runway closed!' if self.weather_check == :stormy
+    plane = @planes.pop
     plane.takeoff!
   end
 
   def check_permission_to_land(plane)
+    raise 'Stormy weather: Runway closed!' if self.weather_check == :stormy
     return 'Permission Denied: Airport Full!' if full?
     plane.permission_to_land=(true)
   end
