@@ -9,8 +9,17 @@ require 'plane'
 # If the airport is full then no planes can land
 describe Airport do
   let(:airport) { Airport.new }
-  let(:hackney) {Airport.new(capacity: 2)}
-  let(:plane) {double :plane}
+  let(:small_airport) {Airport.new(capacity: 2)}
+  let(:plane) {double :plane, permission_to_land: true}
+  # let(:landedplane) {double :plane, flying_status: :landed} 
+
+  # use this method to create testing environment with a full airport
+  def fill(airport)
+    ten_planes = []
+    10.times {ten_planes << :plane}
+    airport.instance_variable_set(:@planes, ten_planes)
+    airport
+  end
 
   context 'When a new airport is created, it..' do
     it 'is created with no planes' do
@@ -22,45 +31,45 @@ describe Airport do
     end
 
     it 'should be able to receive an initialize argument to make capacity 2' do
-      expect(hackney.capacity).to eq 2
+      expect(small_airport.capacity).to eq 2
     end
 
     it 'should know when it is full' do
-      expect(plane).to receive(:land!).twice
-      2.times {hackney.land(plane)}
-      expect(hackney.full?).to be_true
+      expect(fill(airport).full?).to be_true
     end
 
     it 'should know when it is not full' do
-      expect(plane).to receive(:land!)
-      expect(hackney.full?).to be_false
-      hackney.land(plane)
+      expect(small_airport.full?).to be_false
     end
 
   end
   
   context 'taking off and landing' do
-    it 'a plane can land' do
-      expect(plane).to receive(:land!)
-      airport.land(plane)
+    it 'a landed plane can park' do
+      expect(plane).to receive(:flying_status)
+      airport.park(plane)
       expect(airport.planes.count).to eq 1
     end
     
-    it 'a plane can take off' do
-      expect(plane).to receive(:land!)
+    it 'can launch a plane' do
+      expect(plane).to receive(:flying_status)
+      airport.park(plane)
       expect(plane).to receive(:takeoff!)
-      hackney.land(plane)
-      hackney.launch!
-      expect(hackney.planes.count).to eq 0  
+      airport.launch!
+      expect(airport.planes.count).to eq 0  
     end
   end
   
   context 'traffic control' do
     
-    it 'a plane cannot land if the airport is full' do
-      expect(plane).to receive(:land!).exactly(10).times
-      11.times {airport.land(plane)}
-      expect(airport.land(plane)).to eq 'Permission Denied: Airport Full!'
+    it 'will grant permission to land when not full' do
+      expect(plane).to receive(:permission_to_land=){true}
+      airport.check_permission_to_land(plane)
+    end
+
+    it 'will deny permission to land when full' do
+      fill(airport)
+      expect(airport.check_permission_to_land(plane)).to eq 'Permission Denied: Airport Full!'
     end
     
     # Include a weather condition using a module.
@@ -71,10 +80,10 @@ describe Airport do
     # If the airport has a weather condition of stormy,
     # the plane can not land, and must not be in the airport
     context 'weather conditions' do
-      it 'a plane cannot take off when there is a storm brewing' do
+      xit 'a plane cannot take off when there is a storm brewing' do
       end
       
-      it 'a plane cannot land in the middle of a storm' do
+      xit 'a plane cannot land in the middle of a storm' do
       end
     end
   end
@@ -88,23 +97,49 @@ end
 describe Plane do
 
   let(:plane) { Plane.new }
+  let(:airport) {double :airport, planes: []}
+
+  # this method is used to create environment with a landed plane
+  def land(plane)
+    plane.permission_to_land=(true)
+    plane.instance_variable_set(:@flying_status, :landed)
+  end
   
-  it 'has a flying status when created' do
-    expect(plane.flying_status).to eq :flying
+  # instead of testing private state of instance (@flying_status), check results of that state
+  it 'cannot takeoff when created as already flying' do
+    expect(plane.takeoff!).to eq 'You cannot take off when you are already flying.'
   end
 
-  it 'can land' do
-    plane.land!
+  it 'cannot land when already landed' do
+    land(plane)
+    expect(airport).not_to receive(:planes)
+    expect(plane.land!(airport)).to eq 'Are you tripping? You are already on the ground!'
+  end
+
+  it 'can request permission to land' do
+    expect(airport).to receive(:check_permission_to_land)
+    plane.request_permission_to_land(airport)
+  end
+
+  it 'can land with permission' do
+    expect(airport).to receive(:planes)
+    expect(airport).to receive(:planes=) 
+    plane.permission_to_land=(true)
+    plane.land!(airport)
     expect(plane.flying_status).to eq :landed
   end
-  
-  it 'has a flying status when in the air' do
+
+  it 'cannot land without permission' do
+    expect(plane.land!(airport)).to eq 'Cannot land without permission. Maintaining altitude.'
+    expect(plane.flying_status).to eq :flying
   end
   
   it 'can take off' do
+    plane.takeoff!
+    expect(plane.flying_status).to eq :flying
   end
   
-  it 'changes its status to flying after taking of' do
+  xit 'changes its status to flying after taking of' do
   end
 end
 
@@ -114,6 +149,6 @@ end
 # Check when all the planes have landed that they have the right status "landed"
 # Once all the planes are in the air again, check that they have the status of flying!
 describe "The gand finale (last spec)" do
-  it 'all planes can land and all planes can take off' do
+  xit 'all planes can land and all planes can take off' do
   end
 end
