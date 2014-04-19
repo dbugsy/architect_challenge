@@ -121,12 +121,12 @@ describe Plane do
     plane.request_permission_to_land(airport)
   end
 
-  it 'can land with permission' do
-    expect(airport).to receive(:planes)
-    expect(airport).to receive(:planes=) 
+  it 'can land with permission, then revokes that permission' do
+    expect(airport).to receive(:park) 
     plane.permission_to_land=(true)
     plane.land!(airport)
     expect(plane.flying_status).to eq :landed
+    expect(plane.instance_variable_get(:@permission_to_land)).to be_false
   end
 
   it 'cannot land without permission' do
@@ -139,8 +139,6 @@ describe Plane do
     expect(plane.flying_status).to eq :flying
   end
   
-  xit 'changes its status to flying after taking of' do
-  end
 end
 
 # grand final

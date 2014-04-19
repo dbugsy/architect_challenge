@@ -11,9 +11,9 @@ class Plane
   def land!(airport)
     return 'Cannot land without permission. Maintaining altitude.' if !@permission_to_land
     return 'Are you tripping? You are already on the ground!' if @flying_status == :landed
-    new_airport_inventory = airport.planes << self
-    airport.planes=(new_airport_inventory)
+    airport.park(self)
     @flying_status = :landed
+    @permission_to_land = false
   end
 
   def takeoff!

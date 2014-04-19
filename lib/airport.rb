@@ -7,8 +7,6 @@ class Airport
     planes
   end
 
-  attr_accessor :planes
-
   def capacity
     @capacity ||= DEFAULT_CAPACITY
   end
