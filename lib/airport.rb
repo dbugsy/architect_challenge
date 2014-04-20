@@ -5,6 +5,8 @@ class Airport
   
   DEFAULT_CAPACITY = 10
 
+  attr_writer :planes
+
   def initialize(options = {})
     @capacity = options.fetch(:capacity, capacity)
     planes

@@ -16,7 +16,6 @@ class Plane
 
   def land_at(airport)
     self.check_landing_conditions
-    airport.park(self)
     @flying_status = :landed
   end
 
@@ -25,7 +24,7 @@ class Plane
     @flying_status = :flying
   end
 
-  def request_permission_to_land(airport)
+  def request_permission_to_land_at(airport)
     airport.check_permission_to_land(self)
   end
 
