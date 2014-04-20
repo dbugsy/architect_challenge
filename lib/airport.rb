@@ -24,17 +24,18 @@ class Airport
 
   def park(plane)
     return 'Please land before you try and park. Dumbass.' if plane.flying_status == :flying
+    plane.permission_to_land=(false)
     planes << plane
   end
 
   def launch!
-    raise 'Stormy weather: Runway closed!' if self.weather_check == :stormy
+    return 'Stormy weather: Runway closed!' if self.weather_check == :stormy
     plane = @planes.pop
     plane.takeoff!
   end
 
   def check_permission_to_land(plane)
-    raise 'Stormy weather: Runway closed!' if self.weather_check == :stormy
+    return 'Stormy weather: Runway closed!' if self.weather_check == :stormy
     return 'Permission Denied: Airport Full!' if full?
     plane.permission_to_land=(true)
   end

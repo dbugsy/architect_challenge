@@ -14,6 +14,7 @@ describe Airport do
 
   # use this method to create testing environment with a full airport
   def fill(airport)
+    allow(airport).to receive(:weather_check) {:sunny}
     ten_planes = []
     10.times {ten_planes << plane}
     airport.instance_variable_set(:@planes, ten_planes)
@@ -44,26 +45,25 @@ describe Airport do
   end
   
   context 'taking off and landing' do
-    it 'a landed plane can park' do
-      allow(airport).to receive(:the_whim_of_the_gods) {2}
+    it 'a landed plane can park, thus resetting permission to land' do
       expect(plane).to receive(:flying_status)
+      expect(plane).to receive(:permission_to_land=)
       airport.park(plane)
       expect(airport.planes.count).to eq 1
     end
     
-    it 'can launch a plane (in good weather)' do
-      allow(airport).to receive(:the_whim_of_the_gods) {2}
-      expect(plane).to receive(:flying_status)
-      airport.park(plane)
+    it 'can launch a plane' do
+      fill(airport)
       expect(plane).to receive(:takeoff!)
       airport.launch!
-      expect(airport.planes.count).to eq 0  
+      expect(airport.planes.count).to eq 9  
     end
   end
   
   context 'traffic control' do
     
-    it 'will grant permission to land when not full' do
+    it 'will grant permission to land when sunny and not full' do
+      allow(airport).to receive(:weather_check) {:sunny}
       expect(plane).to receive(:permission_to_land=){true}
       airport.check_permission_to_land(plane)
     end
@@ -96,13 +96,13 @@ describe Airport do
         fill(airport)
         allow(airport).to receive(:weather_check) { :stormy }
         expect(plane).not_to receive(:takeoff!)
-        expect { airport.launch! }.to raise_error 'Stormy weather: Runway closed!'
+        expect(airport.launch!).to eq 'Stormy weather: Runway closed!'
       end
       
       it 'will deny permission to land in the middle of a storm' do
         allow(airport).to receive(:weather_check) { :stormy }
         expect(plane).not_to receive(:permission_to_land=)
-        expect { airport.check_permission_to_land(plane) }.to raise_error 'Stormy weather: Runway closed!'
+        expect(airport.check_permission_to_land(plane)).to eq 'Stormy weather: Runway closed!'
       end
 
     end
@@ -127,18 +127,18 @@ describe Plane do
   
   # instead of testing private state of instance (@flying_status), check results of that state
   it 'cannot takeoff when created as already flying' do
-    expect(plane.takeoff!).to eq 'You cannot take off when you are already flying.'
+    expect { plane.takeoff! }.to raise_error 'You cannot take off when you are already flying.'
   end
 
-  xit 'can test conditions if it can land' do
+  it 'can test conditions if it can land' do
     plane.permission_to_land=(true)
-    expect(plane.can_land?).to be_true
+    expect(plane.check_landing_conditions).to be_true
   end
 
   it 'cannot land when already landed' do
     land(plane)
     expect(airport).not_to receive(:planes)
-    expect(plane.land!(airport)).to eq 'Are you tripping? You are already on the ground!'
+    expect { plane.land_at(airport) }.to raise_error 'Are you tripping? You are already on the ground!'
   end
 
   it 'can request permission to land' do
@@ -146,20 +146,20 @@ describe Plane do
     plane.request_permission_to_land(airport)
   end
 
-  it 'can land with permission, then revokes that permission' do
+  it 'can land with permission' do
     expect(airport).to receive(:park) 
     plane.permission_to_land=(true)
-    plane.land!(airport)
+    plane.land_at(airport)
     expect(plane.flying_status).to eq :landed
-    expect(plane.instance_variable_get(:@permission_to_land)).to be_false
   end
 
   it 'cannot land without permission' do
-    expect(plane.land!(airport)).to eq 'Cannot land without permission. Maintaining altitude.'
+    expect { plane.land_at(airport) }.to raise_error 'Cannot land without permission. Maintaining altitude.'
     expect(plane.flying_status).to eq :flying
   end
   
   it 'can take off' do
+    land(plane)
     plane.takeoff!
     expect(plane.flying_status).to eq :flying
   end
@@ -171,7 +171,7 @@ end
 # Be careful of the weather, it could be stormy!
 # Check when all the planes have landed that they have the right status "landed"
 # Once all the planes are in the air again, check that they have the status of flying!
-describe "The gand finale (last spec)" do
-  xit 'all planes can land and all planes can take off' do
+describe "The grand finale (last spec)" do
+  it 'all planes can land and all planes can take off' do
   end
 end

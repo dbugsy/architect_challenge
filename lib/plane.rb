@@ -8,16 +8,20 @@ class Plane
   attr_reader :flying_status
   attr_writer :permission_to_land
 
-  def land!(airport)
-    return 'Cannot land without permission. Maintaining altitude.' if !@permission_to_land
-    return 'Are you tripping? You are already on the ground!' if @flying_status == :landed
+  def check_landing_conditions 
+    raise 'Cannot land without permission. Maintaining altitude.' if !@permission_to_land
+    raise 'Are you tripping? You are already on the ground!' if @flying_status == :landed
+    true
+  end 
+
+  def land_at(airport)
+    self.check_landing_conditions
     airport.park(self)
     @flying_status = :landed
-    @permission_to_land = false
   end
 
   def takeoff!
-    return 'You cannot take off when you are already flying.' if @flying_status == :flying
+    raise 'You cannot take off when you are already flying.' if @flying_status == :flying
     @flying_status = :flying
   end
 
