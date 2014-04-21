@@ -171,7 +171,7 @@ end
 # Check when all the planes have landed that they have the right status "landed"
 # Once all the planes are in the air again, check that they have the status of flying!
 describe "The grand finale (last spec)" do
-  
+  let (:timbuktu) {Airport.new}
   def navigate_storm(plane,airport)
     until plane.instance_variable_get(:@permission_to_land)
       plane.request_permission_to_land_at(airport)
@@ -185,19 +185,21 @@ describe "The grand finale (last spec)" do
   end
   
   it 'all planes should land' do
-  #create environment with 6 planes in airspace around timbuktu airport
-  timbuktu = Airport.new
-  airspace = []
-  6.times {airspace << Plane.new}
-  # land the planes
-  6.times do landing_plane=airspace.pop
-    landing_sequence(landing_plane,timbuktu)
-    end
-  
-  expect(timbuktu.planes.count).to eq 6
-  expect(airspace.count).to eq 0
+    #create environment with 6 planes in airspace around timbuktu airport
+    airspace = []
+    6.times {airspace << Plane.new}
+    # land the planes
+    6.times do landing_plane=airspace.pop
+      landing_sequence(landing_plane,timbuktu)
+      end
+    # test the planes (should have status :landed and all should be parked)
+    expect(timbuktu.planes.count).to eq 6
+    expect(airspace.count).to eq 0
+    expect(timbuktu.planes[0].flying_status).to eq :landed
+    expect(timbuktu.planes[5].flying_status).to eq :landed
   end
 end
+  
   
 
 
