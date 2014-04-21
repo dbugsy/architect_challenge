@@ -10,6 +10,7 @@ describe Airport do
   let(:airport) { Airport.new }
   let(:small_airport) {Airport.new(capacity: 2)}
   let(:plane) {double :plane, permission_to_land: true}
+  
 
   # use this method to create testing environment with a full airport
   def fill(airport)

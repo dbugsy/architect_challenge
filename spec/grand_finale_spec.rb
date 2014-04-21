@@ -8,6 +8,7 @@ require 'plane'
 describe "The grand finale (last spec)" do
   let (:timbuktu) {Airport.new}
   let (:airspace) {Array.new}
+
   
   # the weather may be changeable, but this method will create environment 
   # where a plane will keep trying until it gets through the storm
@@ -20,6 +21,7 @@ describe "The grand finale (last spec)" do
   # method to create environment where planes negotiate a storm and land
   def landing_sequence(plane,airport)
     navigate_storm(plane, airport)
+    # plane.request_permission_to_land_at(timbuktu)
     plane.land_at(airport)
     airport.park(plane)
   end
@@ -33,6 +35,7 @@ describe "The grand finale (last spec)" do
   end
   
   it 'all planes should land' do
+    # timbuktu.stub(:weather_check).and_return(:sunny)
     #create 6 planes in airspace around timbuktu airport
     6.times {airspace << Plane.new}
     # land the planes
