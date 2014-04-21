@@ -34,6 +34,7 @@ class Airport
     return 'Stormy weather: Runway closed!' if self.weather_check == :stormy
     plane = @planes.pop
     plane.takeoff!
+    plane
   end
 
   def check_permission_to_land(plane)
