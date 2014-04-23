@@ -10,7 +10,7 @@ describe Airport do
   let(:airport) { Airport.new }
   let(:small_airport) {Airport.new(capacity: 2)}
   let(:plane) {double :plane, permission_to_land: true}
-  
+
 
   # use this method to create testing environment with a full airport
   def fill(airport)
@@ -43,7 +43,7 @@ describe Airport do
     end
 
   end
-  
+
   context 'taking off and landing' do
     it 'a landed plane can park, thus resetting permission to land' do
       expect(plane).to receive(:flying_status)
@@ -51,17 +51,17 @@ describe Airport do
       airport.park(plane)
       expect(airport.planes.count).to eq 1
     end
-    
+
     it 'can launch a plane' do
       fill(airport)
       expect(plane).to receive(:takeoff!)
       airport.launch!
-      expect(airport.planes.count).to eq 9  
+      expect(airport.planes.count).to eq 9
     end
   end
-  
+
   context 'traffic control' do
-    
+
     it 'will grant permission to land when sunny and not full' do
       allow(airport).to receive(:weather_check) {:sunny}
       expect(plane).to receive(:permission_to_land=){true}
@@ -72,11 +72,11 @@ describe Airport do
       fill(airport)
       expect(airport.check_permission_to_land(plane)).to eq 'Permission Denied: Airport Full!'
     end
-    
+
     # Include a weather condition using a module.
     # The weather must be random and only have two states "sunny" or "stormy".
     # Try and take off a plane, but if the weather is stormy, the plane can not take off and must remain in the airport.
-    # 
+    #
     # This will require stubbing to stop the random return of the weather.
     # If the airport has a weather condition of stormy,
     # the plane can not land, and must not be in the airport
@@ -98,7 +98,7 @@ describe Airport do
         expect(plane).not_to receive(:takeoff!)
         expect(airport.launch!).to eq 'Stormy weather: Runway closed!'
       end
-      
+
       it 'will deny permission to land in the middle of a storm' do
         allow(airport).to receive(:weather_check) { :stormy }
         expect(plane).not_to receive(:permission_to_land=)
@@ -111,8 +111,8 @@ end
 
 
 
-  
-  
+
+
 
 
 
