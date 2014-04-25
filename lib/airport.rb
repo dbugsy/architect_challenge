@@ -1,4 +1,7 @@
+require_relative './weatherconditions'
 class Airport
+
+  include WeatherConditions
 
   attr_reader :planes
 
@@ -8,11 +11,15 @@ class Airport
   end
 
   def land!(plane)
+    raise 'Airport full! Please try again later.' if full?
+    plane.land!
     @planes << plane
   end
 
-  def launch!(plane)
-    @planes.pop
+  def takeoff!(plane)
+    raise 'Stormy weather - runway closed!' if stormy?
+    plane.takeoff!
+    @planes.delete(plane)
   end
 
   def full?

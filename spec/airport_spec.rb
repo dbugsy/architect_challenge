@@ -12,53 +12,81 @@ describe Airport do
   let (:plane) { double :plane }
 
   def land_a_plane(airport, plane)
+    expect(plane).to receive(:land!)
     airport.land!(plane)
   end
 
   context 'when an instance is created' do
+    before :each do
+      airport.stub(:stormy?).and_return(false)
+    end
 
     it 'it has no planes' do
-      expect(airport.planes.empty?).to be_true 
+      expect(airport.planes.empty?).to be_true
     end
 
     it 'it will be full if ten planes land' do
       10.times { land_a_plane(airport, plane) }
       expect(airport.full?).to be_true
     end
-  
+
   end
 
-  context 'landing and launching' do
-    
+  context 'landing and taking off in good weather' do
+    before :each do
+      airport.stub(:stormy?).and_return(false)
+    end
+
+    it 'commands a plane to land' do
+      expect(plane).to receive(:land!)
+      airport.land!(plane)
+    end
+
     it 'a plane can land' do
       land_a_plane(airport, plane)
       expect(airport.planes.count).to eq 1
     end
 
-    it 'a plane can take launch' do
+    it 'a plane cannot land if the airport is full' do
+      10.times { land_a_plane(airport, plane) }
+      expect {airport.land!(plane)}.to raise_error 'Airport full! Please try again later.'
+    end
+
+    it 'a plane can takeoff!' do
       land_a_plane(airport, plane)
-      airport.launch!(plane)
+      expect(plane).to receive(:takeoff!)
+      airport.takeoff!(plane)
       expect(airport.planes.empty?).to be_true
     end
 
   end
 
-  context 'traffic control' do
-    xit 'a plane cannot land if the airport is full' do
+
+
+  # Include a weather condition using a module.
+  # The weather must be random and only have two states "sunny" or "stormy".
+  # Try and take off a plane, but if the weather is stormy, the plane can not take off and must remain in the airport.
+  #
+  # This will require stubbing to stop the random return of the weather.
+  # If the airport has a weather condition of stormy,
+  # the plane can not land, and must not be in the airport
+  context 'bad weather conditions' do
+
+    before :each do
+      airport.stub(:stormy?).and_return(true)
     end
-    # Include a weather condition using a module.
-    # The weather must be random and only have two states "sunny" or "stormy".
-    # Try and take off a plane, but if the weather is stormy, the plane can not take off and must remain in the airport.
-    #
-    # This will require stubbing to stop the random return of the weather.
-    # If the airport has a weather condition of stormy,
-    # the plane can not land, and must not be in the airport
-    context 'weather conditions' do
-      xit 'a plane cannot take off when there is a storm brewing' do
-      end
-      xit 'a plane cannot land in the middle of a storm' do
-      end
+
+    it 'can be stormy' do
+      expect(airport.stormy?).to be_true
     end
+
+    it 'a plane cannot take off when there is a storm brewing' do
+      expect{airport.takeoff!(plane)}.to raise_error 'Stormy weather - runway closed!'
+    end
+
+    xit 'a plane cannot land in the middle of a storm' do
+    end
+
   end
 end
 
@@ -70,13 +98,29 @@ end
 describe Plane do
 
   let(:plane) { Plane.new }
-  xit 'has a flying status when created' do
+  let(:airport) {double :airport}
+  it 'has a flying status when created' do
+    expect(plane.flying?).to be_true
   end
-  xit 'has a flying status when in the air' do
+
+  it 'can land' do
+    plane.land!
+    expect(plane.flying?).to be_false
   end
-  xit 'can take off' do
+
+  it 'can take off' do
+    plane.land!
+    plane.takeoff!
+    expect(plane.flying?).to be_true
   end
-  xit 'changes its status to flying after taking of' do
+
+  it 'raises an error if you try to land a plane that is not flying' do
+    plane.land!
+    expect {plane.land!}.to raise_error 'Are you high? This plane is already landed!'
+  end
+
+  it 'raises an error if you try to takeoff when already in the air' do
+    expect {plane.takeoff!}.to raise_error 'This is not a spaceship. You cannot takeoff when already flying!'
   end
 end
 
