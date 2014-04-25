@@ -11,24 +11,38 @@ describe Airport do
   let (:airport) { Airport.new }
   let (:plane) { double :plane }
 
+  def land_a_plane(airport, plane)
+    airport.land!(plane)
+  end
+
   context 'when an instance is created' do
 
     it 'it has no planes' do
       expect(airport.planes.empty?).to be_true 
     end
+
+    it 'it will be full if ten planes land' do
+      10.times { land_a_plane(airport, plane) }
+      expect(airport.full?).to be_true
+    end
   
   end
 
-  context 'taking off and landing' do
-
+  context 'landing and launching' do
+    
     it 'a plane can land' do
-      airport.land!(plane)
+      land_a_plane(airport, plane)
       expect(airport.planes.count).to eq 1
     end
 
-    xit 'a plane can take off' do
+    it 'a plane can take launch' do
+      land_a_plane(airport, plane)
+      airport.launch!(plane)
+      expect(airport.planes.empty?).to be_true
     end
+
   end
+
   context 'traffic control' do
     xit 'a plane cannot land if the airport is full' do
     end
