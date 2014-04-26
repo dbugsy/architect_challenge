@@ -11,10 +11,15 @@ class Airport
   end
 
   def land!(plane)
-    raise 'Stormy weather - runway closed!' if stormy?
-    raise 'Airport full! Please try again later.' if full?
+    can_land?
     plane.land!
     @planes << plane
+  end
+
+  def can_land?
+    raise 'Stormy weather - runway closed!' if stormy?
+    raise 'Airport full! Please try again later.' if full?
+    true
   end
 
   def takeoff!
